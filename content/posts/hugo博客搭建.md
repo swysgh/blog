@@ -79,7 +79,17 @@ git submodule add https://github.com/hugo-fixit/FixIt.git themes/FixIt
 git submodule update --remote --merge themes/FixIt
 ```
 
-## 推送到github并配置action
+## 第四步：写文章
+
+### 创建新文章
+
+hugo new posts/nginx-config.md
+
+### 本地实时预览（在浏览器看效果）
+
+hugo server -D
+
+## 第五步：推送到github并配置action
 
 可以参考hugo官方的部署方式，也可以看我总结的方式来部署 <https://gohugo.io/host-and-deploy/host-on-github-pages/#article>
 
