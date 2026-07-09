@@ -1,0 +1,14 @@
+baseURL = 'https://example.org/'
+locale = 'en-us'
+title = 'SWYSGH-BLOG'
+theme = 'FixIt'
+defaultContentLanguage = 'zh-cn'
+
+[markup]
+_merge = "shallow"
+
+[outputs]
+_merge = "shallow"
+
+[taxonomies]
+_merge = "shallow"
