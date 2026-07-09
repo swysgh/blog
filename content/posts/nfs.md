@@ -8,11 +8,13 @@ description: nfs搭建和后期维护记录
 keywords: nfs 存储
 weight: 0
 categories:
-  - draft
+  - 教程
 collections:
-  - draft
+  - 存储
 tags:
-  - nfs 存储
+  - nfs
+  - 存储
+  - linux
 
 ---
 

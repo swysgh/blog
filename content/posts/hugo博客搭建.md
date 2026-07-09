@@ -8,9 +8,9 @@ description:
 keywords:
 weight: 0
 categories:
-  - draft
+  - 教程
 collections:
-  - draft
+  - 搭建
 tags:
   - 博客
 
