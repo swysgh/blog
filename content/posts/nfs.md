@@ -12,7 +12,7 @@ categories:
 collections:
   - draft
 tags:
-  - draft
+  - nfs 存储
 
 ---
 

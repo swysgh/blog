@@ -12,15 +12,7 @@ categories:
 collections:
   - draft
 tags:
-  - draft
-summary:
-featured_image:
-featured_image_preview:
-password:
-message:
-repost:
-  enable: false
-  url:
+  - 博客
 
 ---
 
