@@ -12,3 +12,7 @@ _merge = "shallow"
 
 [taxonomies]
 _merge = "shallow"
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
