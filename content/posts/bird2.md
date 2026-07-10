@@ -32,5 +32,10 @@ sudo apt update && sudo apt install bird2
 
 ## 配置
 
+`birdc interface` 显示bird识别到的接口
+
+`birdc show route` 显示bird内部的路由表
+
 `birdc show protocol` 显示协议
+
 `birdc show ospf` 显示ospf相关

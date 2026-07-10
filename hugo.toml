@@ -16,3 +16,7 @@ _merge = "shallow"
 [caches]
   [caches.images]
     dir = ':cacheDir/images'
+
+[params.author]
+name = "swysgh"
+email = "swysgh@gmail.com"
