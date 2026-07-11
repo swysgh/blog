@@ -31,7 +31,7 @@ ping <address> -M do -s <MTU>
 
 底层网络可用MTU = MTU + 28
 
-**WIREGUARD头部占用MTU** IPv4: 60 IPv6: 80
+**WIREGUARD头部占用MTU** IPv4: 60(60-28=32) IPv6: 80(80-32=48)
 
 ## 编写wireguard配置
 
