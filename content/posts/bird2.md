@@ -21,11 +21,11 @@ tags:
 
 ```shell
 sudo apt update
-sudo apt install apt-transport-https ca-certificates wget
+sudo apt install apt-transport-https ca-certificates wget -y
 
-sudo wget -O /usr/share/keyrings/cznic-labs-pkg.gpg https://pkg.labs.nic.cz/gpg
+sudo wget -O /etc/apt/keyrings/cznic-labs-pkg.gpg https://pkg.labs.nic.cz/gpg
 
-echo "deb [signed-by=/usr/share/keyrings/cznic-labs-pkg.gpg] https://pkg.labs.nic.cz/bird2 trixie main" | sudo tee /etc/apt/sources.list.d/cznic-labs-bird2.list 
+echo "deb [signed-by=/etc/apt/keyrings/cznic-labs-pkg.gpg] https://pkg.labs.nic.cz/bird2 trixie main" | sudo tee /etc/apt/sources.list.d/cznic-labs-bird2.list 
 
 sudo apt update && sudo apt install bird2
 ```
