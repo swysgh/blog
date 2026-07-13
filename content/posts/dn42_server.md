@@ -30,7 +30,7 @@ PORT: {ASN号后五位}
 | 国家/地区 | 服务器 | IP | PUBLICKEY | IPv6 Link-Local Address | MTU | COMMENT |
 | ---- | ---- |---- | ---- |  ---- | ---- | ---- |
 | 🇭🇰 香港 | STHK | sthk.swysgh.top | gHIC9cTJt0IeDXVuCpimuaoyCWyNyRdYOP/ynexXllk= | fe80::306 | 1420 | IPv4only |
-| 🇯🇵 日本 | STHK | nbix.swysgh.top | h2HIL3kETCe64O/bVMrRgw9SUvEiGmP2S7zzBh7Wrxo= | fe80::306 | 1420 | IPv6/Nat |
+| 🇯🇵 日本 | NBIX | nbix.swysgh.top | h2HIL3kETCe64O/bVMrRgw9SUvEiGmP2S7zzBh7Wrxo= | fe80::306 | 1420 | IPv6/Nat |
 | 🇨🇳 上海 | TXSH | txsh.swysgh.top | IAxImBUzPfIq/tsj7/pau99cDogDwyaqf891W8Ydxn8= | fe80::306 | 1420 |  |
 | 🇨🇳 金华 | Homeserver |homeserver.swysgh.top| qs6Cn8vHRvK1mhXavBdVZFOJJTyizI1AI1HTbiGRJkU= | fe80::306 | 1420 | SLAACv6only |
 | 🇳🇱 Amsterdam| HHAM |hham.swysgh.top| 9Mg1vYmRvUwq25IwPC8+jqECgJKvWXm5mhhmbHV9b3o= | fe80::306 | 1420 | ipv6暂不可用，工单ing |
