@@ -23,7 +23,7 @@ IPv4_CIDR: 172.20.192.96/27
 
 IPv6_CIDR: fd6e:a078:8f95::/48
 
-BFD 默认启用
+addpath 默认启用
 
 PORT: {ASN号后五位}
 
