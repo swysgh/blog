@@ -34,3 +34,4 @@ PORT: {ASN号后五位}
 | 🇨🇳 上海 | TXSH | txsh.swysgh.top | IAxImBUzPfIq/tsj7/pau99cDogDwyaqf891W8Ydxn8= | fe80::306 | 1420 |  |
 | 🇨🇳 金华 | Homeserver |homeserver.swysgh.top| qs6Cn8vHRvK1mhXavBdVZFOJJTyizI1AI1HTbiGRJkU= | fe80::306 | 1420 | SLAACv6only |
 | 🇳🇱 Amsterdam| HHAM |hham.swysgh.top| 9Mg1vYmRvUwq25IwPC8+jqECgJKvWXm5mhhmbHV9b3o= | fe80::306 | 1420 | ipv6暂不可用，工单ing |
+|🇺🇸 LAX|SKUS| skus.swysgh.top | Ow2j+OOsF/PTE5gGGD+iaWjrFt/MPDZK+nwo8HuDXGQ= | fe80::306 | 1420 | |
