@@ -20,3 +20,6 @@ _merge = "shallow"
 [params.author]
 name = "swysgh"
 email = "swysgh@gmail.com"
+
+[params.cookieconsent]
+  enable = false
