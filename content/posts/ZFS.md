@@ -1,7 +1,7 @@
 ---
 title: ZFS
 subtitle:
-date: 2026-07-09T21:28:33+08:00
+date: 2026-07-11T22:16:42+08:00
 slug: 0ab03bb
 draft: false
 description: zfs搭建和后期维护记录

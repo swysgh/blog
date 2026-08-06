@@ -1,7 +1,7 @@
 ---
 title: DN42_server
 subtitle:
-date: 2026-07-10T14:00:20+08:00
+date: 2026-07-10T14:20:09+08:00
 slug: 3f516e1
 draft: false
 description:

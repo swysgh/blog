@@ -1,7 +1,7 @@
 ---
 title: Wireguard配置
 subtitle:
-date: 2026-07-10T23:09:57+08:00
+date: 2026-07-10T23:38:30+08:00
 slug: 58dfa69
 draft: false
 description:

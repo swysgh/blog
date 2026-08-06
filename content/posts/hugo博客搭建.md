@@ -1,7 +1,7 @@
 ---
 title: hugo博客搭建
 subtitle:
-date: 2026-07-09T18:28:13+08:00
+date: 2026-07-09T19:12:36+08:00
 slug: 5c6225e
 draft: false
 description:

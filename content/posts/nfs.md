@@ -1,7 +1,7 @@
 ---
 title: NFS搭建和维护
 subtitle:
-date: 2026-07-09T21:28:33+08:00
+date: 2026-07-09T21:42:46+08:00
 slug: 5008283
 draft: false
 description: nfs搭建和后期维护记录

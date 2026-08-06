@@ -1,8 +1,8 @@
 ---
-title: Regex
+title: Go printf 格式化
 subtitle:
-date: 2026-07-10T00:39:40+08:00
-slug: 99f23d8
+date: 2026-07-25T19:13:23+08:00
+slug: go-printf
 draft: false
 description:
 keywords:

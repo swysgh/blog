@@ -1,8 +1,8 @@
 ---
 title: ifupdown up to netplan
 subtitle:
-date: 2026-07-09T20:21:30+08:00
-slug: ef9efaa
+date: 2026-08-02T22:32:55+08:00
+slug: ifupdown-netplan
 draft: false
 description:
 keywords:
