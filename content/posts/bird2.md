@@ -2,7 +2,7 @@
 title: Bird2
 subtitle:
 date: 2026-07-10T00:39:40+08:00
-slug: 79d1c20
+slug: 0fb85f4
 draft: false
 description:
 keywords:
