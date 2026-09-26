@@ -3,7 +3,7 @@ title: Fcitx5使用教程
 subtitle:
 date: 2026-09-26T19:37:18+08:00
 slug: fcitx5
-draft: true
+draft: flase
 description:
 keywords:
 weight: 0
