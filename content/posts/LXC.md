@@ -22,7 +22,7 @@ tags:
 
 ```shell
 sudo apt update
-sudo apt install lxc lxc-templates
+sudo apt install lxc
 ```
 
 **检查安装** `lxc-checkconfig`
