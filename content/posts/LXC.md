@@ -49,6 +49,30 @@ sudo lxc-stop -n test
 位置 `/etc/lxc/lxc.conf`  
 修改lxc默认文件位置 `lxc.lxcpath = /zfspool/lxc`
 
+## lxc容器配置
+
+```text
+lxc.start.auto = 1 # 开机自启动
+
+# 添加网卡直通
+lxc.net.1.type = phys
+lxc.net.1.link = enp4s0
+lxc.net.1.flags = up
+lxc.net.1.name = eth1
+lxc.net.1.hwaddr = 53:72:d0:c6:ed:37 # openssl rand -hex 6 | sed 's/../&:/g; s/:$//'
+
+# 添加内核模块映射
+lxc.cgroup2.devices.allow = c 108:0 rwm
+lxc.mount.entry = /dev/ppp dev/ppp none bind,create=file
+
+lxc.cgroup2.devices.allow = c 10:200 rwm
+lxc.mount.entry = /dev/net/tun dev/net/tun none bind,create=file
+
+# 映射宿主机路径
+lxc.mount.entry = /zfspool zfspool none rbind,create=dir
+
+```
+
 ## 解决 Locale 警告
 
 如果 LXC 中出现：
