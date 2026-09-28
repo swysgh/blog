@@ -48,3 +48,33 @@ sudo lxc-stop -n test
 
 位置 `/etc/lxc/lxc.conf`  
 修改lxc默认文件位置 `lxc.lxcpath = /zfspool/lxc`
+
+## 解决 Locale 警告
+
+如果 LXC 中出现：
+
+```text
+perl: warning: Setting locale failed.
+```
+
+通常是 `zh_CN.UTF-8` locale 未生成导致的。
+
+安装并生成 locale：
+
+```bash
+sudo apt install locales -y
+sudo sed -i 's/^# *zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/' /etc/locale.gen
+sudo locale-gen
+```
+
+如果需要将中文设为默认 locale：
+
+```bash
+sudo update-locale LANG=zh_CN.UTF-8 LANGUAGE=zh_CN:zh LC_ALL=zh_CN.UTF-8
+```
+
+重新登录后检查：
+
+```bash
+locale
+```
