@@ -59,7 +59,7 @@ lxc.net.1.type = phys
 lxc.net.1.link = enp4s0
 lxc.net.1.flags = up
 lxc.net.1.name = eth1
-lxc.net.1.hwaddr = 53:72:d0:c6:ed:37 # openssl rand -hex 6 | sed 's/../&:/g; s/:$//'
+lxc.net.1.hwaddr = 02:72:d0:c6:ed:37 # mac=$(printf '02:%02x:%02x:%02x:%02x:%02x\n' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256))); echo "$mac"
 
 # 添加内核模块映射
 lxc.cgroup2.devices.allow = c 108:0 rwm
