@@ -320,12 +320,130 @@ git submodule update --init --recursive  # 初始化并更新子模块
 ```shell
 git tag                     # 列出所有标签
 git tag v1.0.0              # 创建轻量标签
-git tag -a v1.0.0 -m '版本说明'  # 创建附注标签
+git tag -a v1.0.0 -m '版本说明'  # 创建附注标签（推荐）
+git tag -s v1.0.0 -m '版本说明'  # 创建 GPG 签名标签
 git show v1.0.0             # 查看标签信息
 git push origin v1.0.0      # 推送单个标签
-git push origin --tags      # 推送所有标签
+git push origin --tags      # 推送所有标签（谨慎）
 git tag -d v1.0.0           # 删除本地标签
 git push origin --delete v1.0.0  # 删除远程标签
+```
+
+### 轻量标签 vs 附注标签
+
+- **轻量标签**：仅指向 commit 的指针，无元数据，适合临时标记
+- **附注标签**：包含作者、日期、说明，可被 GPG 签名，适合正式发布
+
+**发布标准流程**（配合 GitHub Actions）：
+
+```shell
+# 1. 打附注标签（语义化版本：主版本.次版本.修订号）
+git tag -a v1.0.0 -m "Release v1.0.0: 新功能说明"
+
+# 2. 推送代码和标签（必须两步）
+git push origin main
+git push origin v1.0.0
+```
+
+**触发 GitHub Actions 自动编译**：推送 `v*` 格式 tag 会自动触发 Release 构建。
+
+## GitHub Actions 自动编译
+
+通过 `.github/workflows/` 目录下的 YAML 配置，实现 push 或 tag 时自动编译、测试、发布。
+
+### 基础配置（Go 项目示例）
+
+创建 `.github/workflows/build.yml`：
+
+```yaml
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]    # push 到 main 触发
+    tags: [ 'v*' ]        # 推送 v1.0.0 格式 tag 触发发布
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        
+    - name: Cache
+      uses: actions/cache@v4
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        
+    - name: Build
+      run: |
+        CGO_ENABLED=0 go build -ldflags="-s -w" -o app .
+        
+    - name: Test
+      run: go test -v ./...
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-binary
+        path: app
+        
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+    - name: Build multi-platform
+      run: |
+        GOOS=linux GOARCH=amd64 go build -o app-linux-amd64 .
+        GOOS=windows GOARCH=amd64 go build -o app-windows-amd64.exe .
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          app-linux-amd64
+          app-windows-amd64.exe
+        generate_release_notes: true
+```
+
+### 常用触发条件
+
+| 场景 | 配置 |
+|------|------|
+| Push 到分支 | `on: push: branches: [main]` |
+| 推送 Tag | `on: push: tags: ['v*']` |
+| Pull Request | `on: pull_request` |
+| 定时任务 | `on: schedule: cron: '0 0 * * *'` |
+| 手动触发 | `on: workflow_dispatch` |
+
+### 多平台编译
+
+```yaml
+strategy:
+  matrix:
+    os: [ubuntu-latest, windows-latest, macos-latest]
+runs-on: ${{ matrix.os }}
+```
+
+### 缓存依赖加速
+
+```yaml
+- uses: actions/cache@v4
+  with:
+    path: ~/go/pkg/mod
+    key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 ```
 
 ## 储藏（stash）
