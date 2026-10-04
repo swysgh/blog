@@ -70,6 +70,81 @@ git config --global color.ui auto
 
 配置文件位置：全局配置在 `~/.gitconfig`，仓库配置在 `.git/config`。
 
+## 提交签名（GPG / SSH Key 签名）
+
+当使用 `git commit -S` 要求对提交进行加密签名，但 Git 尚未配置签名密钥时，会报错：
+
+```text
+致命错误：需要配置 user.signingkey 或者 gpg.ssh.defaultKeyCommand 其中之一
+```
+
+现代 Git 支持两种签名方式：
+1. **SSH Key 签名（最简单、最推荐）**：直接复用你现有的 SSH 密钥，无需折腾 GPG，GitHub 完美支持并显示绿色的 `Verified` 标签。
+2. **GPG Key 签名（传统方式）**：需要生成 GPG 密钥对并配置 Key ID。
+
+### 方案一：使用 SSH Key 进行签名（推荐）
+
+1. 查看你现有的 SSH 公钥：
+
+```shell
+ls -la ~/.ssh/
+```
+
+通常会有 `id_ed25519.pub` 或 `id_rsa.pub`（推荐使用 `ed25519`）。
+
+2. 配置 Git 使用 SSH 格式签名：
+
+```shell
+# 告诉 Git 使用 SSH 作为签名格式（默认是 openpgp）
+git config --global gpg.format ssh
+
+# 指定用于签名的 SSH 公钥文件路径
+git config --global user.signingkey ~/.ssh/id_ed25519.pub
+
+# （可选）如果希望以后每次 commit 自动签名，不需要每次手动敲 -S：
+git config --global commit.gpgsign true
+```
+
+3. 将公钥同步到 GitHub（让 GitHub 显示 Verified）：
+   - 打印你的公钥内容：`cat ~/.ssh/id_ed25519.pub`
+   - 打开 GitHub -> **Settings** -> **SSH and GPG keys**。
+   - 点击 **New SSH Key**：
+     - **Key type** 务必选择：**`Signing Key`**（注意：不是 Authentication Key）。
+     - 将公钥内容粘贴进去并保存。
+   - 现在执行 `git commit -S -m "feat: xxx"` 即可成功签名，推送到 GitHub 后提交记录会带有绿色的 `Verified` 徽章。
+
+### 方案二：使用传统 GPG Key 签名
+
+1. 查找已有的 GPG 密钥：
+
+```shell
+gpg --list-secret-keys --keyid-format=long
+```
+
+输出示例中的 `3AA5C34371567BD2` 就是你的 Key ID。
+
+2. 如果没有 GPG 密钥，先生成一个：
+
+```shell
+gpg --full-generate-key
+# 按照提示选择：(1) RSA and RSA -> 4096 -> 永不过期 -> 填写姓名和邮箱 -> 设置密码
+```
+
+3. 配置到 Git：
+
+```shell
+# 告诉 Git 默认签名格式为 openpgp
+git config --global gpg.format openpgp
+
+# 填入上面获取到的 Key ID
+git config --global user.signingkey 3AA5C34371567BD2
+```
+
+### 原理与避坑
+
+- **为什么优先选 SSH 签名？** 传统 GPG 工具链在无图形界面的服务器/LXC 环境中经常会遇到 `pinentry` 弹窗失败、`gpg-agent` 套接字未转发或权限问题，配置繁琐。Git 2.34+ 引入的 SSH 签名直接复用 `ssh-keygen` 生成的密钥，纯命令行交互，更契合服务器开发环境。
+- **邮箱一致性**：提交时使用的 `git config user.email` 必须与 GitHub 账号绑定的邮箱一致，否则即便签名成功，GitHub 也会提示 `Unverified`。
+
 ## 创建仓库
 
 ```shell
