@@ -37,11 +37,11 @@ Git 提交时需要记录作者信息，安装后第一件事就是配置用户�
 ```shell
 # 全局配置（对所有仓库生效）
 git config --global user.name "swysgh"
-git config --global user.email swysgh@gmail.com
+git config --global user.email admin@swysgh.top
 
 # 仅当前仓库配置（去掉 --global）
 git config user.name "swysgh"
-git config user.email swysgh@gmail.com
+git config user.email admin@swysgh.top
 ```
 
 常用配置命令：
