@@ -1,7 +1,7 @@
 ---
 title: LXC
 subtitle:
-date: 2026-07-11T22:16:42+08:00
+date: 2026-09-27T20:42:42+08:00
 slug: LXC
 draft: false
 description: lxc使用教程
