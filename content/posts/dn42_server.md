@@ -29,7 +29,7 @@ PORT: {ASN号后五位}
 
 | 国家/地区 | 服务器 | IP | PUBLICKEY | IPv6 Link-Local Address | MTU | COMMENT |
 | ---- | ---- |---- | ---- |  ---- | ---- | ---- |
-| 🇭🇰 香港 | HK | 172.20.192.105.swysgh.top | gHIC9cTJt0IeDXVuCpimuaoyCWyNyRdYOP/ynexXllk= | fe80::306 | 1420 |  |
+| 🇭🇰 香港 | HK | 172.20.237.5.swysgh.top | gHIC9cTJt0IeDXVuCpimuaoyCWyNyRdYOP/ynexXllk= | fe80::306 | 1420 |  |
 | 🇯🇵 日本 | NBIX | nbix.swysgh.top | h2HIL3kETCe64O/bVMrRgw9SUvEiGmP2S7zzBh7Wrxo= | fe80::306 | 1420 | IPv6/Nat 物理位置在上海 |
-| 🇨🇳 上海 | TXSH | 172.20.192.106.swysgh.top | IAxImBUzPfIq/tsj7/pau99cDogDwyaqf891W8Ydxn8= | fe80::306 | 1420 |  |
-| 🇨🇳 金华 | Homeserver |172.20.192.102.swysgh.top| qs6Cn8vHRvK1mhXavBdVZFOJJTyizI1AI1HTbiGRJkU= | fe80::306 | 1420 | SLAACv6only |
+| 🇨🇳 上海 | TXSH | 172.20.237.6.swysgh.top | IAxImBUzPfIq/tsj7/pau99cDogDwyaqf891W8Ydxn8= | fe80::306 | 1420 |  |
+| 🇨🇳 金华 | router |172.20.237.1.swysgh.top| qs6Cn8vHRvK1mhXavBdVZFOJJTyizI1AI1HTbiGRJkU= | fe80::306 | 1420 | SLAACv6only |
