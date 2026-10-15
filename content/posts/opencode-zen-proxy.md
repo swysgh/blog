@@ -2,6 +2,7 @@
 title: 反代 OpenCode Zen：两种把免费模型变成 OpenAI 兼容 API 的实现路线
 subtitle:
 date: 2026-10-08T00:47:00+08:00
+lastmod: 2026-10-15T20:10:00+08:00
 slug: opencode-zen-proxy
 draft: false
 description: 对比 9router 与 OpenCode2API 两种反代 OpenCode Zen 的思路：伪造 HTTP 客户端指纹 vs 跑一个真的 opencode serve 当上游。
@@ -16,6 +17,10 @@ tags:
   - 反代
   - ai
 ---
+
+> **更新（2026-10-15）**：上游已把免费档迁到 `/inference/v1` 并换了一整套校验（V2 门禁），
+> 本文描述的 `/zen/v1/*` 端点与旧校验规则已失效。正文对两个项目的分析仍值得读，
+> 现状见文末「2026-10-14：上游换了门禁（V2 迁移实录）」一节。
 
 OpenCode Zen 上有一批不用付费就能用的模型。麻烦在于，它不是"给你一个 key 就随便调"的普通 API：免费档的请求必须**看起来像是 OpenCode 官方客户端发出来的**，否则直接 403。
 
@@ -400,8 +405,76 @@ opencode2api [tools:webfetch,read]
 - 你的目标是"给 agent 客户端提供可预测的工具调用行为"——B 的桥接更可控（工具策略可收窄、调用格式归一化、两段式调用），代价是要多跑一个 opencode 进程，且工具语义由代理自己定义。
 - 两条路都要接受同一个风险：**免费档的准入规则是上游随时可改的实现细节**，不是承诺的 API 契约。9router 因为一次会话头变更就要加一个专用 executor，就是最直接的例子。真要长期用，至少得有一组针对"免费档还能不能用"的回归测试。
 
+写这段话的时候我还不知道它多快应验：**一周后，上游就把整个门禁换掉了**。下一节就是这次迁移的完整复盘。
+
+## 六、2026-10-14：上游换了门禁（V2 迁移实录）
+
+10-14 晚 22:08 起，我部署的反代开始全线 403（同日 21:56 还有成功请求）。这不是又一次"收紧"，而是**整套门禁被换掉了**：免费档从 `/zen/v1/*` 迁到了 `/inference/v1/*`，校验规则全部加码。下面是排查与消融的实录，方法比结论更有参考价值——因为规则还会再变。
+
+### 6.1 排除法：先证明不是自己的锅
+
+排查从三个"是不是"开始，每个都用对照实验排除：
+
+| 假设 | 实验 | 结论 |
+|:-----|:-----|:-----|
+| 是不是自己改代码改坏了？ | 用改名前的旧二进制 + 旧配置在临时端口跑 A/B | 同样 403 → 非回归 |
+| 是不是 UA 版本过旧被标记？ | 把 UA 从 `opencode/1.18.31` 升到官方最新版号 | 无变化 → 不是 UA 单因子 |
+| 是不是出口 IP 被拉黑？ | `/zen/v1/models` 走同一代理仍 200 | 端点活着、chat 被拒 → 是**应用层**校验 |
+
+journalctl 里的时间线佐证了"上游当晚又收紧了一轮"：最后成功请求停在 10-14 21:56，22:08 起全 403。
+
+### 6.2 找参照系：社区怎么跟的
+
+自己闷头试之前，先看跟得最快的开源实现怎么改的。当时 [6Kmfi6HP/opencode2api](https://github.com/6Kmfi6HP/opencode2api) 在 10-14、10-15 连发两个提交：
+
+- **10-14**：UA 从两段式 `opencode/<ver>` 改成**三段式** `opencode/latest/<ver>/cli`（npm 包也从 `@opencode/cli` 对上了新下限 2.0.0），新增会话头 `x-opencode-session-id`；
+- **10-15**：免费档端点从 `/zen/v1` 迁到 `/inference/v1`。
+
+参照系给了方向，但**每个细节都要自己验证**——上游没有任何文档，社区代码也只能告诉你"他们改了什么"，不能告诉你"哪条是硬校验、边界在哪"。
+
+### 6.3 消融：把"能过闸的请求"拆成单因子
+
+方法是固定一个**已知能过的探针**（全套 V2 头 + 真实工具定义，`curl` 直接打上游），然后每次只动一个变量。先说结论，V2 门禁的完整形状：
+
+| 校验项 | 规格 | 踩坑点 |
+|:-------|:-----|:-------|
+| 端点 | `POST https://opencode.ai/inference/v1/chat/completions` | `/zen/v1` 只剩 `/models` 还活着 |
+| 认证 | **必发** `Authorization: Bearer public` | 旧版可省；V2 缺了直接 403 |
+| UA | 三段式 `opencode/latest/2.0.29/cli`，下限 2.0.0 | 两段式已不认 |
+| 会话头 | **四个头同值**：`x-opencode-session` / `x-session-id` / `x-session-affinity` / `x-opencode-session-id` | 只发一个不够 |
+| 项目头 | `x-opencode-project: global` | 40-hex 项目 id 会 403 |
+| 请求头 | **禁发** `x-opencode-request` | 旧版必发，V2 里存在即 403——**方向反了** |
+| session id | 内嵌 counter ≤ 63（见下） | ≥ 64 直接 403 |
+| 工具定义 | 每个工具的 `parameters` 必须有**真实参数结构** | 空 `properties:{}` 即 403；`description` 文案反而不校验 |
+
+其中两处是**方向反转**，最能说明"门禁被换了"而不是"加严了"：`Authorization` 从可省变成必发；`x-opencode-request` 从必发变成禁发。
+
+### 6.4 最隐蔽的一道：session id 里的 counter
+
+工具 schema 那条其实好找——诱饵工具一换就 200 了。真正费了三天的是 session id。
+
+`ses_` 后面那段 base62 并不随机：按真客户端的编码规则解开，里面藏着**创建时间戳**和一个**同毫秒计数器**。消融实验的完整序列：
+
+1. 用"已知能过"的探针 session 重放服务的请求体 → 403；换服务自己生成的 session → 200。**问题收敛到 session id**。
+2. 固定 body 和头，只换 session：改 counter、换后缀、换时间戳……单变量全测。
+3. 撞上一个反向信号：探针 session（counter=47）怎么都 200，服务 session（counter=220）怎么都 403。最初误判为"时间戳新鲜度"——但新鲜时间戳 + counter=220 还是 403。
+4. 二分 counter：1、47、48、56、60、63 全 200；64、100、127、128、200、256、512 全 403。**阈值就是 64**。
+
+真客户端同一毫秒内不会发几十个请求，所以 counter 天然很小；而反代如果拿哈希值 mod 4096 生成 counter，几乎必然撞上 64+。这条校验的本质是：**上游在 session id 里埋了置信度信号，反代必须按真客户端的生成语义来造**。
+
+### 6.5 方法论复盘
+
+这次排查里真正可复用的东西：
+
+- **echo server 抓包对照**：让服务把请求打到本地回显服务器，和能过闸的探针逐字节 diff，比肉眼扫代码可靠得多——服务"以为"自己发了某头和实际发了是两回事。
+- **单变量消融**：每次只动一个因子，坏形状和好形状各造一组。"时间戳新鲜度"这个错误结论就是混杂变量（大 counter）给出的，拆开才现形。
+- **先修置信、再修形状**：修完 counter 又测了三轮才定位到工具 schema——因为 counter 的问题把工具的问题**盖住了**。多重门禁叠加时，一道一道剥，别指望一次修完。
+- **规则还会再变**：V2 这套规格是 2026-10-15 的实测快照，它和 V1 一样，是"上游随时可改的实现细节"。唯一长期有效的资产是上面的排查方法，和一组"免费档还能不能用"的回归探针。
+
 ## 参考
 
+- [swysgh/opencode2api](https://github.com/swysgh/opencode2api) —— 我按路线 A 自实现的 Go 版反代，v0.2.0 已适配 V2 门禁（本文第六节的来源）
+- [6Kmfi6HP/opencode2api](https://github.com/6Kmfi6HP/opencode2api) —— V2 迁移跟得最快的参照系，两个关键提交见 6.2 节
 - [decolua/9router](https://github.com/decolua/9router) —— 重点看 `open-sse/providers/registry/opencode*.js`、`open-sse/executors/opencode*.js`、`open-sse/utils/opencodeFingerprint.js`
 - [TiaraBasori/OpenCode2API](https://github.com/TiaraBasori/OpenCode2API) —— 重点看 `src/proxy.js`、`src/tool-runtime/`、`plugin/opencode2api-tool-lock.js`
 - [OpenCode Zen 文档](https://opencode.ai/docs/zen/) —— 模型与端点对照表
